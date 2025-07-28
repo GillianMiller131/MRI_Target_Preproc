@@ -21,10 +21,12 @@ This is a pipeline to preprocess MRI data for functional connectivity driven tar
   3. The logs/<step-name>_<subid>_<sesid>.out (e.g. logs/heudiconv_sub-TMS032_ses-03.out)
      - The output of the actual commands being run
      - Look here for error messages about the commands run in the script
+- Scratch!!!!
 
 ## HeuDiConv - Run_Heudiconv_Job_GNM.sh
 Heuristic Dicom Conversion creates a BIDs dataset from DICOMs. 
 See: https://neuroimaging-core-docs.readthedocs.io/en/latest/pages/heudiconv.html#introduction
+
 
 **Software Needs**:
 - heudiconv_0.12.2.sif
@@ -45,6 +47,24 @@ See: https://neuroimaging-core-docs.readthedocs.io/en/latest/pages/heudiconv.htm
 ## MRIQC - Run_MRIQC_Job_GNM.sh
 Calculates Image Quality Metrics for structural and functional scans. 
 See: https://mriqc.readthedocs.io/en/latest/about.html
+
+**Software Needs**:
+- mriqc_22.0.6.sif
+
+**Script Notes**:
+- MRIQC runs at the subject level; to run at the session add the `--session-id` flag. 
+
+**Data Preparation**:
+- MRIQC runs on BIDs formatted directories, run HeuDiConv or similar first and give MRIQC the bids dir and subject id. 
+
+**Data Output**:
+- Output is directed to derivatives/mriqc
+- Shoud look like?????
+- sctatch is located at $SCRATCH/$USER/mriqc_work
+
+## fMRIPRep - Run_fMRIPrep
+
+
 
 **Software Needs**:
 - 
