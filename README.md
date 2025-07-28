@@ -23,6 +23,7 @@ This is a pipeline to preprocess MRI data for functional connectivity driven tar
      - Look here for error messages about the commands run in the script
 - Scratch!!!!
 
+
 ## HeuDiConv - Run_Heudiconv_Job_GNM.sh
 Heuristic Dicom Conversion creates a BIDs dataset from DICOMs. 
 See: https://neuroimaging-core-docs.readthedocs.io/en/latest/pages/heudiconv.html#introduction
@@ -81,6 +82,28 @@ This guy takes a while!
   
 **Data Output**:
 - Output is directed to derivatives/fmriprep
+
+## XCP Engine - Run_XCP
+Processing wrapper for various pieplines specified by the pipeline design file. 
+The design file here is a pipeline for processing fMRI data, including denoising, filtering, smoothing, connectivity analysis, regional metrics extraction, normalization, and quality control.
+See: https://xcpengine.readthedocs.io/#
+
+**Software Needs**:
+- A container image, e.g. xcpengine_1.2.3.sif
+- a design file, e.g. fc-36p_despike.dsn (See: https://github.com/PennLINC/xcpEngine/tree/master/designs for other options)
+
+**Script Notes**:
+- So this one is a bit weird, you have to give it a "cohort file", which is just a csv file with some identification columns and a path to the nifti image - include example!!!!!
+  - If you're using SLURM, you want a bunch of these so you can run the jobs in parallel.
+  - You may also what multiple if you are want to use different design files per task etc.
+  - Here, we use the same design file for all tasks, so the script is set up to create one csv per a subject/session combo that contains all their fMRI scans from that session - this seems to be more resource efficient than having one job per scan 
+
+**Data Preparation**:
+- 
+**Data Output**:
+
+
+
 
 
 **Software Needs**:
