@@ -101,7 +101,24 @@ See: https://xcpengine.readthedocs.io/#
 **Data Preparation**:
 - 
 **Data Output**:
+-
 
+## Surface Projection
+Projects preprocessed fMRI data onto each hemisphere's cortical surface using freesurfer command line tools
+
+**Software Needs**:
+- 
+
+**Script Notes**:
+- Registers the ses-01 rest scan to the participant's T1 from the Freesurfer directory (<Freesurfer SUBJECTS_DIR>/<subID>/mri/T1.mgz), then applies this registration/transform file to the other task scans (including other sessions)
+  - This works because fMRIPrep registers all functional data to the same anatomical image, even if multiple are provided
+
+**Data Preparation**:
+- 
+
+**Data Output**:
+-  
+- also the li directory 
 
 
 
