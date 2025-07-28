@@ -60,7 +60,7 @@ See: https://mriqc.readthedocs.io/en/latest/about.html
 **Data Output**:
 - Output is directed to derivatives/mriqc
 - Shoud look like?????
-- sctatch is located at $SCRATCH/$USER/mriqc_work
+- scratch is located at $SCRATCH/$USER/mriqc_work
 
 ## fMRIPRep - Run_fMRIPrep
 Preprocesses anatomical and functional scans
@@ -74,13 +74,13 @@ This guy takes a while!
 **Script Notes**:
 - fMRIPrep runs at the subject level, running it at the session level is not recommended and there is no flag for this 
 - fMRIPrep should run distortion correction with fieldmaps if they are in the bids directory; you can also use the `--use-syn-sdc` if you don't have fmaps or there is an issue with them
-- If you have 2 T1w scans within or across sessions of a subject, it will combine them. If you have 1 it will use that one, if you have 3 or more it will use the first T1w.([See: Longitudinal processing](https://fmriprep.org/en/stable/workflows.html#longitudinal-processing:~:text=the%20_roi%20suffix.-,Longitudinal%20processing,%EF%83%81,-In%20the%20case)
-) 
+- If you have 2 T1w scans within or across sessions of a subject, it will combine them. If you have 1 it will use that one, if you have 3 or more it will use the first T1w.(See:[Longitudinal processing](https://fmriprep.org/en/stable/workflows.html#longitudinal-processing:~:text=the%20_roi%20suffix.-,Longitudinal%20processing,%EF%83%81,-In%20the%20case)) 
 
 **Data Preparation**:
-- 
+- fMRIPrep runs on BIDs formatted directories, run HeuDiConv or similar first and give fMRIPrep the bids dir and subject id.
+  
 **Data Output**:
-- 
+- Output is directed to derivatives/fmriprep
 
 
 **Software Needs**:
