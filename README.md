@@ -4,7 +4,7 @@ This is a pipeline to preprocess MRI data for functional connectivity driven tar
 1. HeuDiConv
 2. MRIQC?
 3. fMRIPrep
-4. XCP de-spiking(?)
+4. XCP Engine
 5. Surface Projection
 6. Li Parcellation
 7. Surface and volume projection back to native space
