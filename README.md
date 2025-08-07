@@ -106,12 +106,7 @@ See: https://xcpengine.readthedocs.io/#
   - You may also what multiple if you are want to use different design files per task etc.
   - Here, we use the same design file for all tasks, so the script is set up to create one csv per a subject/session combo that contains all their fMRI scans from that session - this seems to be more resource efficient than having one job per scan
  
-Example cohort file:
-id0,id1,id2,study,run,img
-sub-TMS2010,ses-01,rest,rest,run-1,/home/cnglab/TMS_fMRI/bids_directory/derivatives/fmriprep/sub-TMS2010/ses-01/func/sub-TMS2010_ses-01_task-rest_run-1_space-T1w_desc-preproc_bold.nii.gz
-sub-TMS2010,ses-01,navonlow,navonlow,run-1,/home/cnglab/TMS_fMRI/bids_directory/derivatives/fmriprep/sub-TMS2010/ses-01/func/sub-TMS2010_ses-01_task-navonlow_run-1_space-T1w_desc-preproc_bold.nii.gz
-sub-TMS2010,ses-01,navonhigh,navonhigh,run-1,/home/cnglab/TMS_fMRI/bids_directory/derivatives/fmriprep/sub-TMS2010/ses-01/func/sub-TMS2010_ses-01_task-navonhigh_run-1_space-T1w_desc-preproc_bold.nii.gz
-sub-TMS2010,ses-01,aut,aut,run-1,/home/cnglab/TMS_fMRI/bids_directory/derivatives/fmriprep/sub-TMS2010/ses-01/func/sub-TMS2010_ses-01_task-aut_run-1_space-T1w_desc-preproc_bold.nii.gz
+Example cohort file: Control_all_cohort_sub-TMS2010_ses-01.csv
 
 **Data Preparation**:
 - We run this on the func outputs of fMRIPrep, specifically ${subid}_${sesid}_task-${study}_${run}_space-T1w_desc-preproc_bold.nii.gz
