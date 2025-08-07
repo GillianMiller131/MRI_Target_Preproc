@@ -101,15 +101,24 @@ See: https://xcpengine.readthedocs.io/#
 - a design file, e.g. fc-36p_despike.dsn (See: https://github.com/PennLINC/xcpEngine/tree/master/designs for other options)
 
 **Script Notes**:
-- So this one is a bit weird, you have to give it a "cohort file", which is just a csv file with some identification columns and a path to the nifti image - include example!!!!!
+- So this one is a bit weird, you have to give it a ["cohort file"](https://xcpengine.readthedocs.io/config/cohort.html), which is just a csv file with some identification columns and a path to the nifti image
   - If you're using SLURM, you want a bunch of these so you can run the jobs in parallel.
   - You may also what multiple if you are want to use different design files per task etc.
-  - Here, we use the same design file for all tasks, so the script is set up to create one csv per a subject/session combo that contains all their fMRI scans from that session - this seems to be more resource efficient than having one job per scan 
+  - Here, we use the same design file for all tasks, so the script is set up to create one csv per a subject/session combo that contains all their fMRI scans from that session - this seems to be more resource efficient than having one job per scan
+ 
+Example cohort file:
+id0,id1,id2,study,run,img
+sub-TMS2010,ses-01,rest,rest,run-1,/home/cnglab/TMS_fMRI/bids_directory/derivatives/fmriprep/sub-TMS2010/ses-01/func/sub-TMS2010_ses-01_task-rest_run-1_space-T1w_desc-preproc_bold.nii.gz
+sub-TMS2010,ses-01,navonlow,navonlow,run-1,/home/cnglab/TMS_fMRI/bids_directory/derivatives/fmriprep/sub-TMS2010/ses-01/func/sub-TMS2010_ses-01_task-navonlow_run-1_space-T1w_desc-preproc_bold.nii.gz
+sub-TMS2010,ses-01,navonhigh,navonhigh,run-1,/home/cnglab/TMS_fMRI/bids_directory/derivatives/fmriprep/sub-TMS2010/ses-01/func/sub-TMS2010_ses-01_task-navonhigh_run-1_space-T1w_desc-preproc_bold.nii.gz
+sub-TMS2010,ses-01,aut,aut,run-1,/home/cnglab/TMS_fMRI/bids_directory/derivatives/fmriprep/sub-TMS2010/ses-01/func/sub-TMS2010_ses-01_task-aut_run-1_space-T1w_desc-preproc_bold.nii.gz
 
 **Data Preparation**:
-- 
+- We run this on the func outputs of fMRIPrep, specifically ${subid}_${sesid}_task-${study}_${run}_space-T1w_desc-preproc_bold.nii.gz
+- Cohort files are created by the script and put in derivatives/xcpOut_ALL/cohort_files
+  
 **Data Output**:
--
+- Output is directed to derivatives/xcpOut_ALL
 
 ## Surface Projection
 Projects preprocessed fMRI data onto each hemisphere's cortical surface using freesurfer command line tools
