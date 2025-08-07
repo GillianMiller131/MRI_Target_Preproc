@@ -109,7 +109,7 @@ See: https://xcpengine.readthedocs.io/#
 Example cohort file: Control_all_cohort_sub-TMS2010_ses-01.csv
 
 **Data Preparation**:
-- We run this on the func outputs of fMRIPrep, specifically ${subid}_${sesid}_task-${study}_${run}_space-T1w_desc-preproc_bold.nii.gz
+- We run this on the func outputs of fMRIPrep, specifically `${subid}_${sesid}_task-${study}_${run}_space-T1w_desc-preproc_bold.nii.gz`
 - Cohort files are created by the script and put in derivatives/xcpOut_ALL/cohort_files
   
 **Data Output**:
