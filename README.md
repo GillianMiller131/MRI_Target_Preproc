@@ -1,27 +1,35 @@
 # MRI_Target_Preproc
 This is a pipeline to preprocess MRI data for functional connectivity driven targeting (TMS, etc.) and analysis. The steps are as follows: 
 
-1. HeuDiConv
-2. MRIQC?
+1. Unzipping script *Not made*
+2. HeuDiConv
 3. fMRIPrep
 4. XCP Engine
 5. Surface Projection
 6. Li Parcellation
-7. Surface and volume projection back to native space
 
-*Also the slurm resource script!!!!*
+Then: 
+- For baseline/neuromodulation targeting: Surface and volume projection back to native space
+- For analysis: Get Martched Li Parcellation ROIs and get functional connectivity scores 
+
+### Extras - details at the bottom
+- HeuDiConv at the session level
+- MRIQC
+- Slurm Resource checking script 
+
 
 ## Overall Notes
 - These scripts expect a BIDs formatted directory, including folders such as code, derivatives, and sourcedata. The root or base directory of this will be referred to as the "bids directory" or "bids dir".
 - Scripts generally output to 3 logs files within the code directory:
   1. The SLURM output file, usually slurm_<jobid>.out
-     - Should contain the name of the job and time of submission 
+     - Contains the name of the job and time of submission 
   2. The logs/<subid>_<sesid>_progress.txt file
      - Notes when a job starts, ends, or fails
   3. The logs/<step-name>_<subid>_<sesid>.out (e.g. logs/heudiconv_sub-TMS032_ses-03.out)
      - The output of the actual commands being run
      - Look here for error messages about the commands run in the script
-- Scratch!!!!
+- Scratch: if containers ask for working directories, folders are created in $SCRATCH/$USER and deleted if the job runs successfully
+  - If the job fails, you may want to delete this manually depending on the error
 
 
 ## HeuDiConv - Run_Heudiconv_Job_GNM.sh
