@@ -12,10 +12,11 @@ Then:
 - For baseline/neuromodulation targeting: Surface and volume projection back to native space
 - For analysis: Get Martched Li Parcellation ROIs and get functional connectivity scores 
 
-### Extras - details at the bottom
+### Extra Scripts - details at the bottom
 - HeuDiConv at the session level
 - MRIQC
-- Slurm Resource checking script 
+- Slurm Resource checking script
+- File Check
 
 
 ## Overall Notes
