@@ -13,10 +13,11 @@ Then:
 - For analysis: Get Martched Li Parcellation ROIs and get functional connectivity scores 
 
 ### Extra Scripts - details at the bottom
+- File check - recommended to run before fMRIPrep
+- example batch submission script
 - HeuDiConv at the session level
 - MRIQC
 - Slurm Resource checking script
-- File Check
 
 
 ## Overall Notes
