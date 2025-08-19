@@ -1,3 +1,5 @@
+% This code should be placed under HFR_ai_li/Subfunctions
+
 function [] = Func_ROI2ROI_from_ROIs_Indi_GNM(ROIPath,DataPath,OutPath,SubIDs)
 
 %% Create output folder
