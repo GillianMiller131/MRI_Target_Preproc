@@ -6,7 +6,7 @@
 
 
 
-set -e
+# set -e
 
 # Load MATLAB
 module load matlab
