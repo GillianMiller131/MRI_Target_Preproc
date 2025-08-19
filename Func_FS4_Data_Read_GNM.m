@@ -1,3 +1,4 @@
+% This code should be placed in HFR_ai_li/Subfunctions/
 function [] = Func_FS4_Data_Read_GNM(InPath,OutPath,SubIDs)
 
 % Preprocessed files should be projected on fsaverage4
