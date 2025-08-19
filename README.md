@@ -9,14 +9,14 @@ This is a pipeline to preprocess MRI data for functional connectivity driven tar
 6. Li Parcellation
 
 Then: 
-- For baseline/neuromodulation targeting: Surface and volume projection back to native space
-- For analysis: Get Martched Li Parcellation ROIs and get functional connectivity scores 
+- For baseline/neuromodulation targeting: Surface and volume projection back to native space (1 script)
+- For analysis: Get group matched ROIs then extract network-level functional connectivity scores for networks of interest (2 scripts)
 
 ### Extra Scripts - details at the bottom
-- File check - recommended to run before fMRIPrep
+- File check - recommended to run before fMRIPrep (right now called find_files.py)
 - example batch submission script
 - HeuDiConv at the session level
-- MRIQC
+- MRIQC at the session and subject level
 - Slurm Resource checking script
 
 
@@ -37,7 +37,6 @@ Then:
 ## HeuDiConv - Run_Heudiconv_Job_GNM.sh
 Heuristic Dicom Conversion creates a BIDs dataset from DICOMs. 
 See: https://neuroimaging-core-docs.readthedocs.io/en/latest/pages/heudiconv.html#introduction
-
 
 **Software Needs**:
 - heudiconv_0.12.2.sif
@@ -119,11 +118,12 @@ Example cohort file: Control_all_cohort_sub-TMS2010_ses-01.csv
 **Data Output**:
 - Output is directed to derivatives/xcpOut_ALL
 
-## Surface Projection
+## Surface Projection - Run_surfaceProjection_GNM.sh
 Projects preprocessed fMRI data onto each hemisphere's cortical surface using freesurfer command line tools
 
 **Software Needs**:
-- 
+- MATLAB
+- Freesurfer
 
 **Script Notes**:
 - Registers the ses-01 rest scan to the participant's T1 from the Freesurfer directory (<Freesurfer SUBJECTS_DIR>/<subID>/mri/T1.mgz), then applies this registration/transform file to the other task scans (including other sessions)
@@ -133,21 +133,37 @@ Projects preprocessed fMRI data onto each hemisphere's cortical surface using fr
 - 
 
 **Data Output**:
--  
-- also the li directory 
+- Output is directed to derivatives/surface_projection
+- Will also copy filed to session folder in the $liDir (e.g., derivatives/surface_projection/copies_for_li2019) which will be used in the next step
 
-
-
+## Li Parcellation - Run_Li_Parcellation_Job_GNM.sh 
+Uses each subject's fMRI data to create subject specific ROIs and matches them to the Yeo 17 networks 
 
 **Software Needs**:
-- 
+- [HFR_ai_li](https://nmr.mgh.harvard.edu/bid/DownLoad.html#:~:text=Wang%20D%20et%20al.2015%3A%20Parcellating%20Cortical%20Functional%20Networks%20in%20Individuals.%20Nat.%20Neurosci.)
+- Copy HFR_al_noGUI_GNM.m to HFR_ai_li folder
+- Copy Func_ROI2ROI_from_ROIs_Indi_GNM.m and Func_FS4_Data_Read_GNM.m to HFR_ai_li/Subfunctions
 
 **Script Notes**:
-- 
+- Subject Level: There are 2 options at the subject level
+1. individual_parcellation: use for baseline session; takes all the fMRI tasks in order to do the subject specific parcellation to create ROIs for targeting and analysis; will also create a time series file containing all tasks together (sub_timeframes_fs4.mat) as well as separated ones for each task (sub_taskName_FS4.mat)
+2. individual_timeseries: Use for ses-02 and on; creates timeseries files for all tasks together (sub_timeframes_fs4.mat) as well as separated ones for each task (sub_taskName_FS4.mat)
 
 **Data Preparation**:
-- 
+- This pipeline is not set up for subjects with multiple sessions, so subject input and outputs are in grouped by session (i.e., session folders have subject folders), instead of each subject folder having all 3 sessions
+
 **Data Output**:
-- 
+- Example output folder path: derivatives/li_parcellation/ses-02/
+- individual_parcellation folders: DiscretePatches  IndiPar  MatchMatrix  OrganizedData 
+- individual_timeseries folders: OrganizedData
 
+### Run_Li_Parcellation_Job_GNM_Group.sh
+**Script Notes**:
+- Group Level: There are 2 options at the group level
+  1. create_group_patches: This identifies ROIs that at least 90% of subjects have based on all baseline fMRI scans (can change this % by changing MatchRate in HFR_al_noGUI_GNM.m)
+  2. apply_group_patches: This applies the previously identified 90% ROIs to task timeseries files from all sessions (can change this % by changing MatchRate in HFR_al_noGUI_GNM.m) to extract ROI-ROI and network-network connectivity matrices
+ 
+**Data Preparation**:
+- This should be run after you have run all your subjects through the individual step
 
+  **Data Output**:
