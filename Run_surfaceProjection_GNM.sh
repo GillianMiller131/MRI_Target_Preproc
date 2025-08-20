@@ -4,9 +4,7 @@
 #SBATCH --mem=8G
 #SBATCH --cpus-per-task=1
 
-
-
-# set -e
+set -e
 
 # Load MATLAB
 module load matlab
@@ -23,7 +21,6 @@ bids_dir="${bids_dir%/}"
 
 tasks='rest aut navonhigh navonlow'
 
-# xcpOutDir=${bids_dir}/derivatives/xcpOut_ALL/ 
 OutDir=${bids_dir}/derivatives/surface_projection
 xcpDir=${bids_dir}/derivatives/xcpOut_ALL
 subDir=${bids_dir}/derivatives/fmriprep/sourcedata/freesurfer 
