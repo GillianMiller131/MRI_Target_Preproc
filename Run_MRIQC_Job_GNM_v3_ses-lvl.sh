@@ -49,7 +49,7 @@ elif [ "$apptainer_exit_code" -eq 0 ]; then
     else 
         if [ "${sesid}" == 'ses-03' ]; then #do something better here 
           echo "MRIQC finished. Running fMRIPrep. $timestamp" >> $progress_file 
-          bash Run_fMRIPrep_GNM_v3.sh $subid $bids_dir 
+          sbatch Run_fMRIPrep_GNM_v3.sh $subid $bids_dir 
         else
           echo "MRIQC finished. fMRIPrep should run after ses-03. $timestamp" >> $progress_file
         fi
