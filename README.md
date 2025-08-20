@@ -124,6 +124,7 @@ Projects preprocessed fMRI data onto each hemisphere's cortical surface using fr
 **Software Needs**:
 - MATLAB
 - Freesurfer
+- Matlab script: squeezeFuncSurfHPC
 
 **Script Notes**:
 - Registers the ses-01 rest scan to the participant's T1 from the Freesurfer directory (<Freesurfer SUBJECTS_DIR>/<subID>/mri/T1.mgz), then applies this registration/transform file to the other task scans (including other sessions)
