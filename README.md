@@ -210,3 +210,6 @@ This script extracts the within and between network connectivity values for 2 se
 
 **Data Output**:
 - A csv file in derivatives/li_parcellation named <sleected network 1>_<selected network 2>_connectivity.csv
+
+## Extra scripts
+- 
