@@ -38,14 +38,19 @@ Then:
 Heuristic Dicom Conversion creates a BIDs dataset from DICOMs. 
 See: https://neuroimaging-core-docs.readthedocs.io/en/latest/pages/heudiconv.html#introduction
 
+**Example Usage**:
+- With chaining: `sbatch Run_Heurdiconv_Job_GNM.sh sub-TMS2005 /home/cnglab/TMS_fMRI/bids_directory`
+  - This will submit an fMRIPrep job for the subject if HeuDiConv runs sucessfully
+- To turn off chaining: `sbatch Run_Heurdiconv_Job_GNM.sh sub-TMS2005 /home/cnglab/TMS_fMRI/bids_directory True`
+
 **Software Needs**:
 - heudiconv_0.12.2.sif
 - heuristic_final.py
 
 **Script Notes**:
 - The container runs at the session level, the script runs at the subject level by looping through session folders found in sourcedata
-- Flags/options:
-- - chaining, run fmriprep, run mriqc, etc. ## Need to do this still 
+- Run_Heurdiconv_Job_GNM_ses-lvl.sh is an alternative option to run just one session for a subject
+  - Example usage: `sbatch Run_Heurdiconv_Job_GNM_ses-lvl.sh sub-TMS2005 ses-01 /home/cnglab/TMS_fMRI/bids_directory`
 
 **Data Preparation**:
 - Data for this will be almost directly from the scanner, but you will likely need to do some unzipping/untaring and renaming/moving files around
@@ -54,28 +59,16 @@ See: https://neuroimaging-core-docs.readthedocs.io/en/latest/pages/heudiconv.htm
 **Data Output**:
 - Data will be output into the bids directory as a subject folder containing anat, func, and fmap folders (depenging on which scans you have)
 
-## MRIQC - Run_MRIQC_Job_GNM.sh
-Calculates Image Quality Metrics for structural and functional scans. 
-See: https://mriqc.readthedocs.io/en/latest/about.html
-
-**Software Needs**:
-- mriqc_22.0.6.sif
-
-**Script Notes**:
-- MRIQC runs at the subject level; to run at the session add the `--session-id` flag. 
-
-**Data Preparation**:
-- MRIQC runs on BIDs formatted directories, run HeuDiConv or similar first and give MRIQC the bids dir and subject id. 
-
-**Data Output**:
-- Output is directed to derivatives/mriqc
-- Shoud look like?????
-- scratch is located at `$SCRATCH/$USER/mriqc_work`
 
 ## fMRIPRep - Run_fMRIPrep
 Preprocesses anatomical and functional scans
 See: https://fmriprep.org/en/stable/index.html
 This guy takes a while!
+
+**Example Usage**:
+- With chaining: `sbatch Run_fMRIPrep_Job_GNM.sh sub-TMS2005 /home/cnglab/TMS_fMRI/bids_directory`
+  - This will submit XCP jobs (1 per session) for the subject if fMRIPrep runs sucessfully
+- To turn off chaining: `sbatch Run_fMRIPrep_Job_GNM.sh sub-TMS2005 /home/cnglab/TMS_fMRI/bids_directory True`
 
 **Software Needs**:
 - Singularity or docker container, e.g. fmriprep_21.0.2.sif
@@ -99,6 +92,11 @@ Processing wrapper for various pieplines specified by the pipeline design file.
 The design file here is a pipeline for processing fMRI data, including denoising, filtering, smoothing, connectivity analysis, regional metrics extraction, normalization, and quality control.
 See: https://xcpengine.readthedocs.io/#
 
+**Example Usage**:
+- With chaining: `sbatch Run_XCP_ALL_Job_GNM.sh sub-TMS2005 ses-01 /home/cnglab/TMS_fMRI/bids_directory`
+  - This will submit a surface projection job for the session if XCP runs sucessfully (e.g., would submit surface projection for sub-TMS2005 ses-01 )
+- To turn off chaining: `sbatch Run_XCP_ALL_Job_GNM.sh sub-TMS2005 ses-01 /home/cnglab/TMS_fMRI/bids_directory True`
+
 **Software Needs**:
 - A container image, e.g. xcpengine_1.2.3.sif
 - a design file, e.g. fc-36p_despike.dsn (See: https://github.com/PennLINC/xcpEngine/tree/master/designs for other options)
@@ -120,6 +118,11 @@ Example cohort file: Control_all_cohort_sub-TMS2010_ses-01.csv
 
 ## Surface Projection - Run_surfaceProjection_GNM.sh
 Projects preprocessed fMRI data onto each hemisphere's cortical surface using freesurfer command line tools
+
+**Example Usage**:
+- With chaining: `sbatch Run_surfaceProjection_GNM.sh sub-TMS2005 ses-01 /home/cnglab/TMS_fMRI/bids_directory`
+  - This will submit Li Parcellation job for the session if surface projection runs sucessfully (e.g., would submit Li parcellation for sub-TMS2005 ses-01 )
+- To turn off chaining: `sbatch Run_surfaceProjection_GNM.sh sub-TMS2005 ses-01 /home/cnglab/TMS_fMRI/bids_directory True`
 
 **Software Needs**:
 - MATLAB
@@ -143,6 +146,11 @@ Projects preprocessed fMRI data onto each hemisphere's cortical surface using fr
 
 ## Li Parcellation - Run_Li_Parcellation_Job_GNM.sh 
 Uses each subject's fMRI data to create subject specific ROIs and matches them to the Yeo 17 networks 
+
+**Example Usage**:
+- With chaining: `sbatch Run_Li_Parcellation_Job_GNM.sh sub-TMS2005 ses-01 /home/cnglab/TMS_fMRI/bids_directory`
+  - This will submit Li Parcellation job for the session if surface projection runs sucessfully (e.g., would submit Li parcellation for sub-TMS2005 ses-01 )
+- To turn off chaining: `sbatch Run_surfaceProjection_GNM.sh sub-TMS2005 ses-01 /home/cnglab/TMS_fMRI/bids_directory True`
 
 **Software Needs**:
 - [HFR_ai_li](https://nmr.mgh.harvard.edu/bid/DownLoad.html#:~:text=Wang%20D%20et%20al.2015%3A%20Parcellating%20Cortical%20Functional%20Networks%20in%20Individuals.%20Nat.%20Neurosci.)
@@ -176,6 +184,9 @@ Uses each subject's fMRI data to create subject specific ROIs and matches them t
 
 ## For neuromodulation targeting - Run_resample2native_GNM.sh
 This script resamples each subject's individual network parcellations to native space, then converts them from surface files to volumes to allow for viewing in Brainsight or similar softwares
+
+**Example Usage**:
+- `sbatch Run_resample2native_GNM.sh sub-TMS2005 ses-01 /home/cnglab/TMS_fMRI/bids_directory`
 
 **Script Notes**:
 - The network numbers start at 2, so you need to take the network number that is 1 greater than the corresponding Yeo network number (e.g. Network 12 - FPCNb - would be the files with Network 13 and Network 17 - DMN dorsal - would be Network 18 files. 
@@ -212,4 +223,21 @@ This script extracts the within and between network connectivity values for 2 se
 - A csv file in derivatives/li_parcellation named <sleected network 1>_<selected network 2>_connectivity.csv
 
 ## Extra scripts
-- 
+
+### MRIQC - Run_MRIQC_Job_GNM.sh
+Calculates Image Quality Metrics for structural and functional scans. 
+See: https://mriqc.readthedocs.io/en/latest/about.html
+
+**Software Needs**:
+- mriqc_22.0.6.sif
+
+**Script Notes**:
+- MRIQC runs at the subject level; to run at the session add the `--session-id` flag. 
+
+**Data Preparation**:
+- MRIQC runs on BIDs formatted directories, run HeuDiConv or similar first and give MRIQC the bids dir and subject id. 
+
+**Data Output**:
+- Output is directed to derivatives/mriqc
+- Shoud look like?????
+- scratch is located at `$SCRATCH/$USER/mriqc_work`
