@@ -27,9 +27,7 @@ export SUBJECTS_DIR=${subDir}
 module load matlab
 module load freesurfer
 
-# Do NOT copy fsaverage4 — system FreeSurfer already includes it
-#But it's not in the same place as our subjects outputs so do symbolic link
-# ln -s /home/share/apps/freesurfer/7.4.1/subjects/fsaverage4 /home/cnglab/TMS_fMRI/bids_directory/derivatives/fmriprep/sourcedata/freesurfer/fsaverage4
+# Do NOT copy fsaverage4 — should be in fMRIPrep output
 
 
 # Get list of masks and confidence maps
