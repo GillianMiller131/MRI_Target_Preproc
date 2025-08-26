@@ -30,7 +30,7 @@ Then:
   3. The logs/<step-name>_<subid>_<sesid>.out (e.g. logs/heudiconv_sub-TMS032_ses-03.out)
      - The output of the actual commands being run
      - Look here for error messages about the commands run in the script
-- Scratch: if containers ask for working directories, folders are created in $SCRATCH/$USER and deleted if the job runs successfully
+- Scratch: if containers ask for working directories, folders are created in `$SCRATCH/$USER` and deleted if the job runs successfully
   - If the job fails, you may want to delete this manually depending on the error
 
 
@@ -70,7 +70,7 @@ See: https://mriqc.readthedocs.io/en/latest/about.html
 **Data Output**:
 - Output is directed to derivatives/mriqc
 - Shoud look like?????
-- scratch is located at $SCRATCH/$USER/mriqc_work
+- scratch is located at `$SCRATCH/$USER/mriqc_work`
 
 ## fMRIPRep - Run_fMRIPrep
 Preprocesses anatomical and functional scans
@@ -133,7 +133,7 @@ Projects preprocessed fMRI data onto each hemisphere's cortical surface using fr
 
 **Data Preparation**:
 - This script will look for:
-  - The output of XCP, specifically ${xcpDir}/${subID}/${sesh}/${task}/regress/*residualised.nii.gz
+  - The output of XCP, specifically `${xcpDir}/${subID}/${sesh}/${task}/regress/*residualised.nii.gz`
   - The output of fMRIPrep, specifically ${fmriprepDir}/${subID}/${sesh}/func/${subID}_${sesh}_task-${task}_${run}_space-T1w_boldref.nii.gz
   - The output of recon-all (i.e. fMRIPrep), specifically ${subDir}/${subID}/mri/register.dat with subDir being the Freesurfer subject directory 
 
