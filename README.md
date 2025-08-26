@@ -112,7 +112,7 @@ See: https://xcpengine.readthedocs.io/#
 Example cohort file: Control_all_cohort_sub-TMS2010_ses-01.csv
 
 **Data Preparation**:
-- We run this on the func outputs of fMRIPrep, specifically `${subid}_${sesid}_task-${study}_${run}_space-T1w_desc-preproc_bold.nii.gz`
+- Run this on the func outputs of fMRIPrep, specifically `${subid}_${sesid}_task-${study}_${run}_space-T1w_desc-preproc_bold.nii.gz`
 - Cohort files are created by the script and put in derivatives/xcpOut_ALL/cohort_files
   
 **Data Output**:
@@ -125,13 +125,17 @@ Projects preprocessed fMRI data onto each hemisphere's cortical surface using fr
 - MATLAB
 - Freesurfer
 - Matlab script: squeezeFuncSurfHPC
+  - put in ${bids_dir}/code
 
 **Script Notes**:
 - Registers the ses-01 rest scan to the participant's T1 from the Freesurfer directory (<Freesurfer SUBJECTS_DIR>/<subID>/mri/T1.mgz), then applies this registration/transform file to the other task scans (including other sessions)
   - This works because fMRIPrep registers all functional data to the same anatomical image, even if multiple are provided
 
 **Data Preparation**:
-- 
+- This script will look for:
+  - The output of XCP, specifically ${xcpDir}/${subID}/${sesh}/${task}/regress/*residualised.nii.gz
+  - The output of fMRIPrep, specifically ${fmriprepDir}/${subID}/${sesh}/func/${subID}_${sesh}_task-${task}_${run}_space-T1w_boldref.nii.gz
+  - The output of recon-all (i.e. fMRIPrep), specifically ${subDir}/${subID}/mri/register.dat with subDir being the Freesurfer subject directory 
 
 **Data Output**:
 - Output is directed to derivatives/surface_projection
@@ -142,13 +146,14 @@ Uses each subject's fMRI data to create subject specific ROIs and matches them t
 
 **Software Needs**:
 - [HFR_ai_li](https://nmr.mgh.harvard.edu/bid/DownLoad.html#:~:text=Wang%20D%20et%20al.2015%3A%20Parcellating%20Cortical%20Functional%20Networks%20in%20Individuals.%20Nat.%20Neurosci.)
-- Copy HFR_al_noGUI_GNM.m to HFR_ai_li folder
+- Copy HFR_ai_noGUI_GNM.m to HFR_ai_li folder
 - Copy Func_ROI2ROI_from_ROIs_Indi_GNM.m and Func_FS4_Data_Read_GNM.m to HFR_ai_li/Subfunctions
 
 **Script Notes**:
-- Subject Level: There are 2 options at the subject level
-1. individual_parcellation: use for baseline session; takes all the fMRI tasks in order to do the subject specific parcellation to create ROIs for targeting and analysis; will also create a time series file containing all tasks together (sub_timeframes_fs4.mat) as well as separated ones for each task (sub_taskName_FS4.mat)
-2. individual_timeseries: Use for ses-02 and on; creates timeseries files for all tasks together (sub_timeframes_fs4.mat) as well as separated ones for each task (sub_taskName_FS4.mat)
+
+### Subject Level: There are 2 options at the subject level
+1. individual_parcellation: use for **baseline session**; takes all the fMRI tasks in order to do the subject specific parcellation to create ROIs for targeting and analysis; will also create a time series file containing all tasks together (sub_timeframes_fs4.mat) as well as separated ones for each task (sub_taskName_FS4.mat)
+2. individual_timeseries: Use for ses-02 and on (individual_parcellation will create these for the baseline); creates timeseries files for all tasks together (sub_timeframes_fs4.mat) as well as separated ones for each task (sub_taskName_FS4.mat)
 
 **Data Preparation**:
 - This pipeline is not set up for subjects with multiple sessions, so subject input and outputs are in grouped by session (i.e., session folders have subject folders), instead of each subject folder having all 3 sessions
@@ -158,13 +163,50 @@ Uses each subject's fMRI data to create subject specific ROIs and matches them t
 - individual_parcellation folders: DiscretePatches  IndiPar  MatchMatrix  OrganizedData 
 - individual_timeseries folders: OrganizedData
 
-### Run_Li_Parcellation_Job_GNM_Group.sh
-**Script Notes**:
-- Group Level: There are 2 options at the group level
-  1. create_group_patches: This identifies ROIs that at least 90% of subjects have based on all baseline fMRI scans (can change this % by changing MatchRate in HFR_al_noGUI_GNM.m)
-  2. apply_group_patches: This applies the previously identified 90% ROIs to task timeseries files from all sessions (can change this % by changing MatchRate in HFR_al_noGUI_GNM.m) to extract ROI-ROI and network-network connectivity matrices
+### Group Level: There are 2 options at the group level
+  1. create_group_patches: This identifies ROIs that at least 90% of subjects have based on all baseline fMRI scans (can change this % by changing MatchRate in HFR_al_noGUI_GNM.m); run this on DiscretePatches, one of the outputs of individual_parcellation.  
+  2. apply_group_patches: This applies the previously identified 90% ROIs to task timeseries files from all sessions (can change this % by changing MatchRate in HFR_al_noGUI_GNM.m) to extract ROI-ROI and network-network connectivity matrices; run this on OrganizedData.
  
 **Data Preparation**:
-- This should be run after you have run all your subjects through the individual step
+- This should be run after you have run all your subjects through the subject level li parcellation
 
-  **Data Output**:
+**Data Output**:
+- Output will be derivatives/li_parcellation/MatchRate0.9
+- Output for will be correlation matrices in ROI2ROIFC_Atlas and ROI2ROIFC_Indi; Net2Net the diagonal is within network connectivity
+
+## For neuromodulation targeting - Run_resample2native_GNM.sh
+This script resamples each subject's individual network parcellations to native space, then converts them from surface files to volumes to allow for viewing in Brainsight or similar softwares
+
+**Script Notes**:
+- The network numbers start at 2, so you need to take the network number that is 1 greater than the corresponding Yeo network number (e.g. Network 12 - FPCNb - would be the files with Network 13 and Network 17 - DMN dorsal - would be Network 18 files. 
+
+**Software Needs**:
+- Freesurfer
+
+**Data Preparation**:
+- This script needs the output of recon-all for the current subject as well as fsaverage4 (both should come out of the fMRIPrep script)
+- This script runs on the Network and Network Confidence files from the 10th iteration, found in derivatives/li_parcellation/<session id>/IndiPar/<subject id>/Iter_10
+
+**Data Output**:
+- derivatives/li_parcellation/<session id>/IndiPar/<subject id>/native
+
+## For data analysis - Run_Network_Connectivity_Summary_GNM.sh 
+This script extracts the within and between network connectivity values for 2 selected networks for each fMRI scan (i.e. there are separate connectivity values for each task type) of the selected sessions
+
+**Script Notes**:
+- Given network names should be from this list, note this is the list in order that can be used to identify the network numbers for the native space volumes:
+      NetNames = {'Lateral_Visual', 'Primary_Visual', 'Dorsal_Motor', 'Ventral_Motor',...
+        'Visual_Association', 'Dorsal_Attention', 'Cingulo_Opercular', 'Salience',...
+        'Temporal_Lobe', 'Orbitofrontal', 'Precuneus_PCC_Posterior_DMN',...
+        'FPCN_B', 'FPCN_A', 'Lateral_Temporal', 'Medial_Temporal', ...
+        'DMN_Canonical', 'DMN_dorsal', 'Motor_hand'};
+
+**Software Needs**:
+- extract_selected_networks_GNM.m in <BIDs dir>/code
+- MATLAB
+
+**Data Preparation**:
+- This script finds all of the Net2Net_corr_z.mat files in derivatives/li_parcellation/<session id>/ROI2ROIFC_Indi 
+
+**Data Output**:
+-A csv file in derivatives/li_parcellation named <sleected network 1>_<selected network 2>_connectivity.csv
