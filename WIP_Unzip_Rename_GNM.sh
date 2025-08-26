@@ -1,3 +1,7 @@
+# final output ${bids_dir}/sourcedata/${sub}/${ses} 
+#should have BIDs session id at the end (i.e., ses-01)
+
+
 while read -r subid; do
     [[ -z "$subid" ]] && continue  # skip empty lines
     echo "Processing $subid"
@@ -18,11 +22,11 @@ source_dir=/home/cnglab/TMS_fMRI/bids_directory/sourcedata
 for i in ${source_dir}/TMS20*; do
     sub=$(basename "$i" | cut -d _ -f1)
     count=1
-    for sesdir in "$i"/TMS20*_20*; do
+    for sesdir in "$i"/TMS20*; do
         if [ -d "$sesdir" ]; then
             ses=$(printf "ses-%02d" "$count")
             echo "${sub},${ses},$(basename "$sesdir")" >> ${source_dir}/scan_inventory.csv
-            # mv $sesdir ${source_dir}/${sub}/sub-${sub}_${ses}
+            # mv $sesdir ${source_dir}/${sub}/${ses}/sub-${sub}_${ses}
             ((count++))
         fi
     done
