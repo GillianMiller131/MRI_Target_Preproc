@@ -127,7 +127,7 @@ Projects preprocessed fMRI data onto each hemisphere's cortical surface using fr
 **Software Needs**:
 - MATLAB
 - Freesurfer
-- Matlab script: squeezeFuncSurfHPC
+- Matlab script: squeezeFuncSurfHPC.m
   - put in ${bids_dir}/code
 
 **Script Notes**:
