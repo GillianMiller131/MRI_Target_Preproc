@@ -11,8 +11,8 @@ chain_off=$4
 
 bids_dir="${bids_dir%/}"
 
-
-# DO NOT include 'module load apptainer'
+tasks='rest navonlow navonhigh aut'
+run='run-1'
 
 XCPDIR=$bids_dir/derivatives/xcpOut_ALL
 SCRATCHDIR=$SCRATCH/$USER/xcp_work/${subid}_${sesid}
@@ -43,8 +43,6 @@ mkdir -p $SCRATCHDIR
 if [[ ! -f "$COHORT" ]]; then
     echo "Generating cohort file for ${subid}_${sesid}" 
 
-    tasks='rest navonlow navonhigh aut'
-    run='run-1'
     echo -e "id0,id1,study,run,img" > "$COHORT"
 
     for task in $tasks; do
