@@ -88,7 +88,7 @@ elif [ "$apptainer_exit_code" -eq 0 ]; then
     slurm_file=${bids_dir}/code/xcp-all_slurm.txt
     echo "$SLURM_JOB_ID" >> "$slurm_file"
     if [ "$chain_off" == "True" ]; then
-        echo "Chaining is disabled. Exiting script. $timestamp" >> "$progress_file"
+        echo "XCP-All finished. Chaining is disabled. $timestamp" >> "$progress_file"
     else
         echo "XCP-All finished. Submitting Surface Projection $timestamp" >> "$progress_file"
         sbatch Run_surfaceProjection_Job_GNM.sh "$subid" "$sesid" "$bids_dir" 
