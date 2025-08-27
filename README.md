@@ -79,6 +79,7 @@ This guy takes a while!
 - fMRIPrep should run distortion correction with fieldmaps if they are in the bids directory; you can also use the `--use-syn-sdc` if you don't have fmaps or there is an issue with them
 - If you have 2 T1w scans within or across sessions of a subject, it will combine them. If you have 1 it will use that one, if you have 3 or more it will use the first T1w.(See:[Longitudinal processing](https://fmriprep.org/en/stable/workflows.html#longitudinal-processing:~:text=the%20_roi%20suffix.-,Longitudinal%20processing,%EF%83%81,-In%20the%20case))
 - The `--fs-subjects-dir` flag should prevent fMRIPrep from re-running recon-all if that output already exisits (say from a previous session's fMRIPrep or from running recon-all manually), which should save time when running sessions 2 and 3
+  - Note that scripts following this one will be looking for the surf directory, 
   - You can also take advantage of this if you would like to select your T1w, you can run recon-all on your selected T1w and fMRIPrep will use it - particularly helpful if a few of your subjects have 2 T1w or if someone has a very low quality T1w. (example command: ` recon-all -s sub-01 -i sub-01_ses-01_T1w.nii.gz -all`)
 
 **Data Preparation**:
