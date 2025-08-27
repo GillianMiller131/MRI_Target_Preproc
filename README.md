@@ -206,12 +206,13 @@ This script resamples each subject's individual network parcellations to native 
 This script extracts the within and between network connectivity values for 2 selected networks for each fMRI scan (i.e. there are separate connectivity values for each task type) of the selected sessions
 
 **Script Notes**:
-- Given network names should be from this list, note this is the list in order that can be used to identify the network numbers for the native space volumes:
+- Given network names should be from this list
       - NetNames = {'Lateral_Visual', 'Primary_Visual', 'Dorsal_Motor', 'Ventral_Motor',...
         'Visual_Association', 'Dorsal_Attention', 'Cingulo_Opercular', 'Salience',...
         'Temporal_Lobe', 'Orbitofrontal', 'Precuneus_PCC_Posterior_DMN',...
         'FPCN_B', 'FPCN_A', 'Lateral_Temporal', 'Medial_Temporal', ...
         'DMN_Canonical', 'DMN_dorsal', 'Motor_hand'};
+- The network numbers are 2-19 in the li parcellation and 0-17 in the corr matrices, so mappings are based on order rather than specific network numbers
 
 **Software Needs**:
 - extract_selected_networks_GNM.m in <BIDs dir>/code
