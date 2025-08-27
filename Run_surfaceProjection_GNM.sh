@@ -4,7 +4,7 @@
 #SBATCH --mem=8G
 #SBATCH --cpus-per-task=1
 
-set -e
+# set -e
 
 # Load MATLAB
 module load matlab
@@ -16,10 +16,9 @@ module load freesurfer
 subID=$1
 sesh=$2
 bids_dir=$3
+chain_off=$4
 
 bids_dir="${bids_dir%/}"  
-
-tasks='rest aut navonhigh navonlow'
 
 OutDir=${bids_dir}/derivatives/surface_projection
 xcpDir=${bids_dir}/derivatives/xcpOut_ALL
@@ -30,19 +29,30 @@ matlabScriptPath=${bids_dir}/code
 outputDir=${bids_dir}/derivatives/surface_projection
 fmriprepDir=${bids_dir}/derivatives/fmriprep
 run='run-1'
+tasks='rest aut navonhigh navonlow'
 
 export SUBJECTS_DIR=${subDir}  # Set the Freesurfer directory for the subject
 
+timestamp=$(date +"%Y-%m-%d %H:%M:%S") 
+
+echo "${subid} ${sesid} Surface Projection $timestamp"
+
+mkdir -p ${bids_dir}/code/logs/${subid}_${sesid}/
+
+progress_file=${bids_dir}/code/logs/${subid}_${sesid}_progress.txt
+
+echo "Surface Projection Starting" >> $progress_file
+
+exec > ${bids_dir}/code/logs/${subid}_${sesid}/surf-proj_${subid}_${sesid}.out 2>&1
+
 # Hemispheres
 hemis=(lh rh)
-
 
 # Navigate to the output directory for the subject/session
 
 mkdir -p ${OutDir}/${subID}/${sesh}/surf
 
 cd ${OutDir}/${subID}/${sesh} 
-
 
 
 # Surface registration with bbregister (native BOLD to Freesurfer surface)
@@ -112,3 +122,20 @@ for task in ${tasks[@]}; do
       scp ${hemi}.squeezed.fs4.sm${fwhm}.${subID}_${sesh}_task-${task}_${run}_residualised_fsaverage6_sm6_fsaverage4.nii.gz ${liDir}/${sesh}/${subID}/surf/
   done
 done
+
+exit_code=$?
+timestamp=$(date +"%Y-%m-%d %H:%M:%S") 
+
+if [ "$exit_code" -ne 0 ]; then
+    echo "Surface Projection failed. $timestamp" >> "$progress_file"
+    exit 1  
+elif [ "$exit_code" -eq 0 ]; then
+    slurm_file=${bids_dir}/code/surface-projection_slurm.txt
+    echo "$SLURM_JOB_ID" >> "$slurm_file"
+    if [ "$chain_off" == "True" ]; then
+        echo "Surface Projection finished. Chaining is disabled. $timestamp" >> "$progress_file"
+    else
+        echo "Surface Projection finished. Submitting Li Parcellation $timestamp" >> "$progress_file"
+        sbatch Run_Li_Parcellation_Job_GNM.sh "$subid" "$sesid" "$bids_dir" 
+    fi
+fi
