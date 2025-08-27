@@ -3,9 +3,6 @@
 #SBATCH --time=24:00:00
 #SBATCH --mem=50G
 #SBATCH --cpus-per-task=12
-#SBATCH --output=logs/slurm_%j.out
-#SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=gm1157@georgetown.edu
 
 module load freesurfer/7.4.1
 
@@ -13,6 +10,7 @@ subid=$1
 bids_dir=$2
 chain_off=$3
 
+bids_dir="${bids_dir%/}"
 
 subnum=${subid:4}
 
@@ -29,11 +27,10 @@ exec 3>&1 4>&2  # Save SLURM output
 # Set base paths
 
 BIDSDIR=$bids_dir
-
 OUTDIR=$BIDSDIR/derivatives/fmriprep/
 WORKDIR=$SCRATCH/$USER/fMRIPrep_scratch/${subid} 
 
-FS_LICENSE_DIR=/home/dh1097/fs_license
+FS_LICENSE_DIR=$bids_dir/code/fs_license
 export FS_LICENSE=$FS_LICENSE_DIR/license.txt
 
 # Create output and work directories if they don't exist
@@ -50,7 +47,7 @@ apptainer run \
 /data /out participant \
 --participant_label $subnum \
 --fs-license-file /usr/local/freesurfer/license.txt \
---fs-subjects-dir /data/derivatives/freesurfer \
+--fs-subjects-dir /data/derivatives/fmriprep/sourcedata/freesurfer
 --output-spaces fsaverage T1w MNI152NLin6Asym MNI152NLin2009cAsym \
 --cifti-output 91k \
 --nthreads 12 \
@@ -76,7 +73,14 @@ fi
 
 for log in "${log_files[@]}"; do
     if [ "$apptainer_exit_code" -eq 0 ]; then
-        echo "fMRIPrep finished. $timestamp" >> "$log"
+        if [ "$chain_off" == "True" ]; then
+            echo "fMRIPrep finished. $timestamp" >> "$log"
+        else
+            echo "fMRIPrep finished. Submitting XCP $timestamp" >> "$progress_file"
+            ses_folders=(${OUTDIR}/${subid}/ses-*)
+            for sesid in "${ses_folders[@]}"; do
+                sbatch Run_XCP_ALL_Job_GNM.sh "$subid" "$sesid" "$bids_dir" 
+            done
     else
         echo "fMRIPrep failed. $timestamp" >> "$log"
     fi
