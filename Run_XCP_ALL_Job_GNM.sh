@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=xcp_all
 #SBATCH --time=03:00:00
-#SBATCH --mem=100G
+#SBATCH --mem=40G
 #SBATCH --cpus-per-task=8
 
 subid=$1
@@ -29,7 +29,7 @@ progress_file=${bids_dir}/code/logs/${subid}_${sesid}_progress.txt
 echo "XCP-All Starting" >> $progress_file
 
 if [ -d "$XCPDIR/${subid}/${sesid}" ] && [ "$(ls -A "$XCPDIR/${subid}/${sesid}")" ]; then
-  echo "$XCPDIR/${subid}/${sesid} exists and is not empty. Exiting."
+  echo "$XCPDIR/${subid}/${sesid} exists and is not empty. Exiting." >> $progress_file
   exit 1
 fi
 
@@ -40,20 +40,19 @@ exec > ${bids_dir}/code/logs/${subid}_${sesid}/xcp-all_${subid}_${sesid}.out 2>&
 mkdir -p ${bids_dir}/derivatives/xcpOut_ALL/cohort_files
 mkdir -p $SCRATCHDIR
 
-
 if [[ ! -f "$COHORT" ]]; then
     echo "Generating cohort file for ${subid}_${sesid}" 
 
-    studies='rest navonlow navonhigh aut'
+    tasks='rest navonlow navonhigh aut'
     run='run-1'
     echo -e "id0,id1,study,run,img" > "$COHORT"
 
-    for study in $studies; do
-        img="${bids_dir}/derivatives/fmriprep/${subid}/${sesid}/func/${subid}_${sesid}_task-${study}_${run}_space-T1w_desc-preproc_bold.nii.gz"
+    for task in $tasks; do
+        img="${bids_dir}/derivatives/fmriprep/${subid}/${sesid}/func/${subid}_${sesid}_task-${task}_${run}_space-T1w_desc-preproc_bold.nii.gz"
         
         if [ -f "$img" ]; then
-            echo "$img exists."            
-            echo -e "${subid},${sesid},${study},${run},${img}" >> "$COHORT"
+            echo "$img exists. Adding to cohort file."            
+            echo -e "${subid},${sesid},${task},${run},${img}" >> "$COHORT"
         else
             echo "$img does not exist."
         fi
@@ -61,14 +60,13 @@ if [[ ! -f "$COHORT" ]]; then
 
     # After loop: exit if file is empty or contains only the header
     if [ ! -s "$COHORT" ] || [ "$(wc -l < "$COHORT")" -le 1 ]; then
-        echo "$COHORT is empty or contains only the header. Deleting and Exiting."
-        rm -f "$COHORT"  
+        echo "$COHORT is empty or contains only the header. Exiting."
+        # rm -f "$COHORT"  
         exit 1
     fi
 elif [ -s "$COHORT" ] || [ "$(wc -l < "$COHORT")" -gt 1 ]; then
     echo "$COHORT exists and is not empty. Using this file."
 fi
-
 
 apptainer run \
   --bind $XCPDIR:/data \
@@ -80,7 +78,6 @@ apptainer run \
   -o /data/ \
   -i /tmp/ \
   -r /data/
-
 
 apptainer_exit_code=$? 
 
@@ -96,7 +93,7 @@ elif [ "$apptainer_exit_code" -eq 0 ]; then
         echo "Chaining is disabled. Exiting script. $timestamp" >> "$progress_file"
     else
         echo "XCP-All finished. Submitting Surface Projection $timestamp" >> "$progress_file"
-        # sbatch Run_XXX_Job_GNM_v3_ses-lvl.sh "$subid" "$sesid" "$bids_dir" 
+        sbatch Run_surfaceProjection_Job_GNM.sh "$subid" "$sesid" "$bids_dir" 
     fi
 fi
 
