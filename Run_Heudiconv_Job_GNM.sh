@@ -15,9 +15,7 @@ bids_dir="${bids_dir%/}"
 
 subnum=${subid:4}
 
-
 ses_folders=(${bids_dir}/sourcedata/${subid}/ses-*)
-
 
 exit_code=0
 for ses in "${ses_folders[@]}"; do
@@ -69,7 +67,6 @@ for ses in "${ses_folders[@]}"; do
 
 done
 
-
 apptainer_exit_code=$? 
 
 timestamp=$(date +"%Y-%m-%d %H:%M:%S") 
@@ -84,6 +81,6 @@ elif [ "$exit_code" -eq 0 ]; then
       echo "Chaining is disabled. Exiting script. $timestamp" >> "$progress_file"
   else
       echo "HeuDiConv finished. Submitting fMRIPrep $timestamp" >> "$progress_file"
-      # sbatch Run_fMRIPrep_Job_GNM_v3.sh "$subid" "$bids_dir" 
+      sbatch Run_fMRIPrep_Job_GNM.sh "$subid" "$bids_dir" 
   fi
 fi
