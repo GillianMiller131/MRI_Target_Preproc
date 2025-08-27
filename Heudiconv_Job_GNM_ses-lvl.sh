@@ -67,7 +67,7 @@ elif [ "$apptainer_exit_code" -eq 0 ]; then
         echo "Chaining is disabled. Exiting script. $timestamp" >> "$progress_file"
     else
         echo "Heudiconv finished. Submitting fMRIPrep. $timestamp" >> "$progress_file"
-        #sbatch Run_fMRIPrep_Job_GNM_v3_ses-lvl.sh "$subid" "$bids_dir" 
+        sbatch Run_fMRIPrep_Job_GNM.sh "$subid" "$bids_dir" 
     fi
 fi
 
