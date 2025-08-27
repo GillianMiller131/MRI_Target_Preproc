@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #SBATCH --job-name=resample_net2nat        # Job name
-#SBATCH --time=24:00:00                    # Time limit hrs:min:sec
+#SBATCH --time=2:00:00                    # Time limit hrs:min:sec
 #SBATCH --mem=16G                          # Memory per node
 #SBATCH --cpus-per-task=1                 # Number of cores to use
 
@@ -23,6 +23,18 @@ sm2=6
 # Set FreeSurfer variables
 subDir=${bids_dir}/derivatives/fmriprep/sourcedata/freesurfer 
 export SUBJECTS_DIR=${subDir}
+
+timestamp=$(date +"%Y-%m-%d %H:%M:%S") 
+
+echo "${subid} ${sesid} resample2native $timestamp"
+
+mkdir -p ${bids_dir}/code/logs/${subid}_${sesid}/
+
+progress_file=${bids_dir}/code/logs/${subid}_${sesid}_progress.txt
+
+echo "resample2native Starting" >> $progress_file
+
+exec > ${bids_dir}/code/logs/${subid}_${sesid}/resample2native_${subid}_${sesid}.out 2>&1
 
 module load matlab
 module load freesurfer
@@ -149,4 +161,18 @@ for net in ${confMaps}; do
 
 done
 
-echo "Resampling completed successfully for subject ${sub}"
+exit_code=$?
+timestamp=$(date +"%Y-%m-%d %H:%M:%S") 
+
+if [ "$exit_code" -ne 0 ]; then
+    echo "resample2native failed. $timestamp" >> "$progress_file"
+    exit 1  
+elif [ "$exit_code" -eq 0 ]; then
+    slurm_file=${bids_dir}/code/resample2native_slurm.txt
+    echo "$SLURM_JOB_ID" >> "$slurm_file"
+    echo "resample2native finished. $timestamp" >> "$progress_file"
+    echo "Find your vol files in ${inDir}/IndiPar/${sub}/native"
+    bash net_numbers.sh
+    fi
+fi
+
