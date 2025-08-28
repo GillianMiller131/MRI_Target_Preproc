@@ -13,8 +13,8 @@ Then:
 - For analysis: Get group matched ROIs then extract network-level functional connectivity scores for networks of interest (2 scripts)
 
 ### Extra Scripts - details at the bottom
-- File check - recommended to run before fMRIPrep (right now called find_files.py)
-- example batch submission script
+- File check - recommended to run before fMRIPrep (right now called Check_BIDS_files.py)
+- example batch submission script?
 - HeuDiConv at the session level
 - MRIQC at the session and subject level
 - Slurm Resource checking script
