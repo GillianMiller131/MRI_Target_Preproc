@@ -18,6 +18,7 @@ Then:
 - HeuDiConv at the session level
 - MRIQC at the session and subject level
 - Slurm Resource checking script
+- net_numbers.sh
 
 
 ## Overall Notes
@@ -34,7 +35,7 @@ Then:
   - If the job fails, you may want to delete this manually depending on the error
 
 
-## HeuDiConv - Run_Heudiconv_Job_GNM.sh
+## HeuDiConv 
 Heuristic Dicom Conversion creates a BIDs dataset from DICOMs. 
 See: https://neuroimaging-core-docs.readthedocs.io/en/latest/pages/heudiconv.html#introduction
 
@@ -60,7 +61,7 @@ See: https://neuroimaging-core-docs.readthedocs.io/en/latest/pages/heudiconv.htm
 - Data will be output into the bids directory as a subject folder containing anat, func, and fmap folders (depenging on which scans you have)
 
 
-## fMRIPRep - Run_fMRIPrep
+## fMRIPRep
 Preprocesses anatomical and functional scans
 See: https://fmriprep.org/en/stable/index.html
 This guy takes a while!
@@ -88,7 +89,7 @@ This guy takes a while!
 **Data Output**:
 - Output is directed to derivatives/fmriprep
 
-## XCP Engine - Run_XCP
+## XCP Engine
 Processing wrapper for various pieplines specified by the pipeline design file. 
 The design file here is a pipeline for processing fMRI data, including denoising, filtering, smoothing, connectivity analysis, regional metrics extraction, normalization, and quality control.
 See: https://xcpengine.readthedocs.io/#
@@ -117,7 +118,7 @@ Example cohort file: Control_all_cohort_sub-TMS2010_ses-01.csv
 **Data Output**:
 - Output is directed to derivatives/xcpOut_ALL
 
-## Surface Projection - Run_surfaceProjection_GNM.sh
+## Surface Projection
 Projects preprocessed fMRI data onto each hemisphere's cortical surface using freesurfer command line tools
 
 **Example Usage**:
@@ -145,7 +146,7 @@ Projects preprocessed fMRI data onto each hemisphere's cortical surface using fr
 - Output is directed to derivatives/surface_projection
 - Will also copy filed to session folder in the $liDir (e.g., derivatives/surface_projection/copies_for_li2019) which will be used in the next step
 
-## Li Parcellation - Run_Li_Parcellation_Job_GNM.sh 
+## Li Parcellation 
 Uses each subject's fMRI data to create subject specific ROIs and matches them to the Yeo 17 networks 
 
 **Example Usage**:
@@ -159,38 +160,27 @@ Uses each subject's fMRI data to create subject specific ROIs and matches them t
 - Copy Func_ROI2ROI_from_ROIs_Indi_GNM.m and Func_FS4_Data_Read_GNM.m to HFR_ai_li/Subfunctions
 
 **Script Notes**:
-
-### Subject Level: There are 2 options at the subject level
+There are 2 subject level options within HFR_ai_noGUI_GNM.m:
 1. individual_parcellation: use for **baseline session**; takes all the fMRI tasks in order to do the subject specific parcellation to create ROIs for targeting and analysis; will also create a time series file containing all tasks together (sub_timeframes_fs4.mat) as well as separated ones for each task (sub_taskName_FS4.mat)
 2. individual_timeseries: Use for ses-02 and on (individual_parcellation will create these for the baseline); creates timeseries files for all tasks together (sub_timeframes_fs4.mat) as well as separated ones for each task (sub_taskName_FS4.mat)
 
 **Data Preparation**:
-- This pipeline is not set up for subjects with multiple sessions, so subject input and outputs are in grouped by session (i.e., session folders have subject folders), instead of each subject folder having all 3 sessions
+- This li parcellation pipeline is not set up for subjects with multiple sessions, so subject input and outputs are in grouped by session (i.e., session folders have subject folders), instead of each subject folder having all 3 sessions
 
 **Data Output**:
 - Example output folder path: derivatives/li_parcellation/ses-02/
 - individual_parcellation folders: DiscretePatches  IndiPar  MatchMatrix  OrganizedData 
 - individual_timeseries folders: OrganizedData
 
-### Group Level: There are 2 options at the group level
-  1. create_group_patches: This identifies ROIs that at least 90% of subjects have based on all baseline fMRI scans (can change this % by changing MatchRate in HFR_al_noGUI_GNM.m); run this on DiscretePatches, one of the outputs of individual_parcellation.  
-  2. apply_group_patches: This applies the previously identified 90% ROIs to task timeseries files from all sessions (can change this % by changing MatchRate in HFR_al_noGUI_GNM.m) to extract ROI-ROI and network-network connectivity matrices; run this on OrganizedData.
- 
-**Data Preparation**:
-- This should be run after you have run all your subjects through the subject level li parcellation
-
-**Data Output**:
-- Output will be derivatives/li_parcellation/MatchRate0.9
-- Output for will be correlation matrices in ROI2ROIFC_Atlas and ROI2ROIFC_Indi; Net2Net the diagonal is within network connectivity
-
-## For neuromodulation targeting - Run_resample2native_GNM.sh
+## After Li parcellation:
+### For neuromodulation targeting 
 This script resamples each subject's individual network parcellations to native space, then converts them from surface files to volumes to allow for viewing in Brainsight or similar softwares
 
 **Example Usage**:
 - `sbatch Run_resample2native_GNM.sh sub-TMS2005 ses-01 /home/cnglab/TMS_fMRI/bids_directory`
 
 **Script Notes**:
-- The network numbers start at 2, so you need to take the network number that is 1 greater than the corresponding Yeo network number (e.g. Network 12 - FPCNb - would be the files with Network 13 and Network 17 - DMN dorsal - would be Network 18 files. 
+- The network numbers start at 2, so you need to take the network number that is 1 greater than the corresponding Yeo network number (e.g. Network 12 - FPCNb - would be the files with Network 13 and Network 17 - DMN dorsal - would be Network 18 files.) 
 
 **Software Needs**:
 - Freesurfer
@@ -201,18 +191,39 @@ This script resamples each subject's individual network parcellations to native 
 
 **Data Output**:
 - derivatives/li_parcellation/<session id>/IndiPar/<subject id>/native
+- 
+### For data analysis
+#### 1. Li Parcellation at the group level
 
-## For data analysis - Run_Network_Connectivity_Summary_GNM.sh 
-This script extracts the within and between network connectivity values for 2 selected networks for each fMRI scan (i.e. there are separate connectivity values for each task type) of the selected sessions
+**Example Usage**:
+- `sbatch Li_Parcellation_Group.sh /home/cnglab/TMS_fMRI/bids_directory`
 
 **Script Notes**:
-- Given network names should be from this list
+Group Level: There are 2 options at the group level within HFR_ai_noGUI_GNM.m
+  1. create_group_patches: This identifies ROIs that at least 90% of subjects have based on all baseline fMRI scans (can change this % by changing MatchRate in HFR_al_noGUI_GNM.m); run this on DiscretePatches, one of the outputs of individual_parcellation.  
+  2. apply_group_patches: This applies the previously identified 90% ROIs to task timeseries files from all sessions (can change this % by changing MatchRate in HFR_al_noGUI_GNM.m) to extract ROI-ROI and network-network connectivity matrices; run this on OrganizedData.
+ 
+**Data Preparation**:
+- This should be run after you have run all your subjects through the subject level li parcellation
+
+**Data Output**:
+- Output will be derivatives/li_parcellation/MatchRate0.9
+- Output for will be correlation matrices in ROI2ROIFC_Atlas and ROI2ROIFC_Indi; Net2Net the diagonal is within network connectivity
+
+## 2. Extract the functional connectivity values of interest from the z-transformed correlation matrices
+This script extracts the within and between network connectivity values for 2 selected networks for each fMRI scan (i.e. there are separate connectivity values for each task type) of the selected sessions
+
+**Example Usage:**
+- `sbatch Run_Network_Connectivity_Summary_GNM.sh /home/cnglab/TMS_fMRI/bids_directory`
+  
+**Script Notes**:
+- Given network names should be from this list:
       - NetNames = {'Lateral_Visual', 'Primary_Visual', 'Dorsal_Motor', 'Ventral_Motor',...
         'Visual_Association', 'Dorsal_Attention', 'Cingulo_Opercular', 'Salience',...
         'Temporal_Lobe', 'Orbitofrontal', 'Precuneus_PCC_Posterior_DMN',...
         'FPCN_B', 'FPCN_A', 'Lateral_Temporal', 'Medial_Temporal', ...
         'DMN_Canonical', 'DMN_dorsal', 'Motor_hand'};
-- The network numbers are 2-19 in the li parcellation and 0-17 in the corr matrices, so mappings are based on order rather than specific network numbers
+- The network numbers in the corr_matrices start at 0, so you need to take the network number that is 1 less than the corresponding Yeo network number; the extract_selected_networkss_GNM.sh script called by Run_Network_Connectivity_Summary_GNM.sh handles this
 
 **Software Needs**:
 - extract_selected_networks_GNM.m in <BIDs dir>/code
