@@ -226,14 +226,14 @@ This script extracts the within and between network connectivity values for 2 se
 - The network numbers in the corr_matrices start at 0, so you need to take the network number that is 1 less than the corresponding Yeo network number; the extract_selected_networkss_GNM.sh script called by Run_Network_Connectivity_Summary_GNM.sh handles this
 
 **Software Needs**:
-- extract_selected_networks_GNM.m in <BIDs dir>/code
+- extract_selected_networks_GNM.m in bids_dir/code
 - MATLAB
 
 **Data Preparation**:
-- This script finds all of the Net2Net_corr_z.mat files in derivatives/li_parcellation/<session id>/ROI2ROIFC_Indi 
+- This script finds all of the Net2Net_corr_z.mat files in derivatives/li_parcellation/session_id/ROI2ROIFC_Indi 
 
 **Data Output**:
-- A csv file in derivatives/li_parcellation named <sleected network 1>_<selected network 2>_connectivity.csv
+- A csv file in derivatives/li_parcellation named selected-network-1_selected-network-2_connectivity.csv
 
 ## Extra scripts
 
