@@ -26,9 +26,9 @@ Then:
 - Scripts generally output to 3 logs files within the code directory:
   1. The SLURM output file, usually slurm_<jobid>.out
      - Contains the name of the job and time of submission 
-  2. The logs/<subid>_<sesid>_progress.txt file
+  2. The logs/subject-id_session-id_progress.txt file
      - Notes when a job starts, ends, or fails
-  3. The logs/<step-name>_<subid>_<sesid>.out (e.g. logs/heudiconv_sub-TMS032_ses-03.out)
+  3. The logs/step-name_subject-id_session-id.out (e.g. logs/heudiconv_sub-TMS032_ses-03.out)
      - The output of the actual commands being run
      - Look here for error messages about the commands run in the script
 - Scratch: if containers ask for working directories, folders are created in `$SCRATCH/$USER` and deleted if the job runs successfully
